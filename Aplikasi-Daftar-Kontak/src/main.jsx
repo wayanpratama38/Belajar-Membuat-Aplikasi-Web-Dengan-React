@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import ContactApp from './ContactApp.jsx'
+import ContactApp from './components/ContactApp.jsx'
 
 const root = createRoot(document.getElementById('root'))
 root.render(<ContactApp />)
