@@ -1,13 +1,13 @@
-import React from 'react';
+import React from "react";
 
 class NoteInput extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      title: '',
-      body: '',
-      errorMessage: ''
+      title: "",
+      body: "",
+      errorMessage: "",
     };
 
     this.onTitleChangeEventHandler = this.onTitleChangeEventHandler.bind(this);
@@ -17,41 +17,40 @@ class NoteInput extends React.Component {
 
   onTitleChangeEventHandler(event) {
     this.setState(() => {
-      const charCount = event.target.value.length
+      const charCount = event.target.value.length;
       if (charCount <= 50) {
         return {
-          title: event.target.value
-        }
+          title: event.target.value,
+        };
       }
-    })
+    });
   }
 
   onBodyChangeEventHandler(event) {
     this.setState(() => {
       return {
-        body: event.target.value
-      }
-    })
+        body: event.target.value,
+      };
+    });
   }
 
   onSubmitEventHandler(event) {
     event.preventDefault();
     if (this.state.body.length < 10) {
-      this.setState({ errorMessage: 'Isi catatan minimal harus 10 karakter.' })
+      this.setState({ errorMessage: "Isi catatan minimal harus 10 karakter." });
       return;
     }
     this.props.addNote({
       title: this.state.title,
-      body: this.state.body
-    })
+      body: this.state.body,
+    });
     this.setState(() => {
       return {
-        title: '',
-        body: '',
-        errorMessage: ''
-      }
-    })
-
+        title: "",
+        body: "",
+        errorMessage: "",
+      };
+    });
   }
 
   render() {
@@ -61,14 +60,18 @@ class NoteInput extends React.Component {
         <h2>Buat catatan</h2>
 
         {this.state.errorMessage && (
-          <p className="note-input__feedback--error">{this.state.errorMessage}</p>
+          <p className="note-input__feedback--error">
+            {this.state.errorMessage}
+          </p>
         )}
         <form
           onSubmit={this.onSubmitEventHandler}
           data-testid="note-input-form"
         >
           <p
-            className={`note-input__title__char-limit ${remainingChars <= 10 ? 'note-input__title__char-limit--warn' : ''}`}
+            className={`note-input__title__char-limit ${
+              remainingChars <= 10 ? "note-input__title__char-limit--warn" : ""
+            }`}
             data-testid="note-input-title-remaining"
           >
             Sisa karakter: {remainingChars}

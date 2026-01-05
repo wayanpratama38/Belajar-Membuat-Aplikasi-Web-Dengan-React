@@ -1,17 +1,16 @@
-import React from 'react';
-import { getInitialData } from '../utils';
-import NoteInput from './NoteInput';
-import NotesList from './NotesList';
+import React from "react";
+import { getInitialData } from "../utils";
+import NoteInput from "./NoteInput";
+import NotesList from "./NotesList";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      // TODO [Basic] simpan data catatan dari util getInitialData supaya daftar awal langsung tampil.
       notes: getInitialData(),
 
-      // TODO [Skilled] sediakan state untuk kata kunci pencarian.
+      searchKeyword: "",
     };
 
     this.onAddNoteHandler = this.onAddNoteHandler.bind(this);
@@ -30,40 +29,53 @@ class App extends React.Component {
             title: title,
             body: body,
             createdAt: new Date(),
-            archived: false
-          }
-        ]
-      }
-    })
+            archived: false,
+          },
+        ],
+      };
+    });
   }
 
   onDeleteHandler(id) {
-    const updateNotes = this.state.notes.filter((note) => note.id != id)
-    this.setState({ notes: [...updateNotes] })
+    const updateNotes = this.state.notes.filter((note) => note.id != id);
+    this.setState({ notes: [...updateNotes] });
   }
 
   onArchiveHandler(id) {
-    const updateNotes = this.state.notes.map((note) => (note.id === id ? { ...note, archived: !note.archived } : note));
-    this.setState({ notes: [...updateNotes] })
+    const updateNotes = this.state.notes.map((note) =>
+      note.id === id ? { ...note, archived: !note.archived } : note
+    );
+    this.setState({ notes: [...updateNotes] });
   }
 
   onSearchHandler(keyword) {
-    // TODO [Skilled] simpan keyword ke state dan manfaatkan untuk memfilter catatan.
-    console.warn('[TODO] Implement onSearchHandler', { keyword });
+    keyword.preventDefault();
+    this.setState({ searchKeyword: keyword.target.value });
   }
 
   render() {
     const { notes, searchKeyword } = this.state;
 
-    // TODO [Skilled] filter catatan berdasarkan searchKeyword (case-insensitive).
-    const filteredNotes = notes;
-    const activeNotes = notes.filter((note) => note.archived != true).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-    const archivedNotes = notes.filter((note) => note.archived === true).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const filteredNotes = notes.filter((note) =>
+      note.title.toLowerCase().match(searchKeyword.toLowerCase())
+    );
+
+    const activeNotes = filteredNotes
+      .filter((note) => note.archived != true)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const archivedNotes = filteredNotes
+      .filter((note) => note.archived === true)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     return (
       <div className="note-app" data-testid="note-app">
         <div className="note-app__header" data-testid="note-app-header">
           <h1>Notes</h1>
+          <input
+            placeholder="search by title of notes ..."
+            value={this.state.searchKeyword}
+            onChange={this.onSearchHandler}
+          />
         </div>
         <div className="note-app__body" data-testid="note-app-body">
           <NoteInput addNote={this.onAddNoteHandler} />
@@ -74,6 +86,7 @@ class App extends React.Component {
             <h2 id="active-notes-title">Catatan Aktif</h2>
             <NotesList
               notes={activeNotes}
+              keyword={searchKeyword}
               onDelete={this.onDeleteHandler}
               onArchive={this.onArchiveHandler}
               dataTestId="active-notes-list"
@@ -86,6 +99,7 @@ class App extends React.Component {
             <h2 id="archived-notes-title">Arsip</h2>
             <NotesList
               notes={archivedNotes}
+              keyword={searchKeyword}
               onDelete={this.onDeleteHandler}
               onArchive={this.onArchiveHandler}
               dataTestId="archived-notes-list"
