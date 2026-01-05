@@ -9,7 +9,7 @@ class App extends React.Component {
 
     this.state = {
       // TODO [Basic] simpan data catatan dari util getInitialData supaya daftar awal langsung tampil.
-      notes: null,
+      notes: getInitialData(),
 
       // TODO [Skilled] sediakan state untuk kata kunci pencarian.
     };
@@ -21,19 +21,30 @@ class App extends React.Component {
   }
 
   onAddNoteHandler({ title, body }) {
-    // TODO [Basic] tambahkan catatan baru ke state.notes gunakan spread operator dan +new Date() sebagai id.
-    // TODO [Advanced] setelah menambahkan, pastikan catatan baru muncul pada daftar aktif.
-    console.warn('[TODO] Implement onAddNoteHandler', { title, body });
+    this.setState((prevState) => {
+      return {
+        notes: [
+          ...prevState.notes,
+          {
+            id: +new Date(),
+            title: title,
+            body: body,
+            createdAt: new Date(),
+            archived: false
+          }
+        ]
+      }
+    })
   }
 
   onDeleteHandler(id) {
-    // TODO [Basic] gunakan array.filter untuk menghapus catatan berdasarkan id.
-    console.warn('[TODO] Implement onDeleteHandler', { id });
+    const updateNotes = this.state.notes.filter((note) => note.id != id)
+    this.setState({ notes: [...updateNotes] })
   }
 
   onArchiveHandler(id) {
-    // TODO [Advanced] gunakan array.map untuk toggle nilai archived catatan sesuai id dan pisahkan daftar aktif/arsip.
-    console.warn('[TODO] Implement onArchiveHandler', { id });
+    const updateNotes = this.state.notes.map((note) => (note.id === id ? { ...note, archived: !note.archived } : note));
+    this.setState({ notes: [...updateNotes] })
   }
 
   onSearchHandler(keyword) {
@@ -46,9 +57,8 @@ class App extends React.Component {
 
     // TODO [Skilled] filter catatan berdasarkan searchKeyword (case-insensitive).
     const filteredNotes = notes;
-    // TODO [Advanced] pisahkan catatan aktif dan arsip menggunakan array.filter, lalu urutkan berdasarkan tanggal terbaru.
-    const activeNotes = filteredNotes;
-    const archivedNotes = filteredNotes;
+    const activeNotes = notes.filter((note) => note.archived != true).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    const archivedNotes = notes.filter((note) => note.archived === true).sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     return (
       <div className="note-app" data-testid="note-app">
